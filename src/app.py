@@ -1,7 +1,7 @@
 import io
 from flask import Flask, Response, jsonify, redirect, render_template, request, url_for
 from database import db, init_db
-from models import Clientes  # Importar el modelo correcto
+from models import Creditos  # Importar el modelo correcto
 import os
 
 template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
@@ -15,7 +15,7 @@ init_db(app)
 @app.route('/')
 def home():
     try:
-        clientes = Clientes.query.all()
+        clientes = Creditos.query.all()
         clientes_dict = [cliente.__dict__ for cliente in clientes]
         
         # Eliminar metadatos de SQLAlchemy
@@ -31,7 +31,7 @@ def home():
 @app.route('/add', methods=['POST'])
 def addCliente():
     try:
-        cliente = Clientes(
+        cliente = Creditos(
             cliente=request.form['nombre'],
             monto=request.form['monto'],
             tasa_interes=request.form['ti'],
@@ -48,7 +48,7 @@ def addCliente():
 @app.route('/delete/<int:id>')
 def deleteCliente(id):
     try:
-        cliente = Clientes.query.get(id)
+        cliente = Creditos.query.get(id)
         db.session.delete(cliente)
         db.session.commit()
         return redirect(url_for('home'))
@@ -59,7 +59,7 @@ def deleteCliente(id):
 @app.route('/edit/<int:id>', methods=['POST'])
 def editCliente(id):
     try:
-        cliente = Clientes.query.get(id)
+        cliente = Creditos.query.get(id)
         if not cliente:
             return "❌ Cliente no encontrado", 404
 
@@ -81,7 +81,7 @@ def editCliente(id):
 @app.route('/test-db')
 def test_db():
     try:
-        clientes = Clientes.query.all()
+        clientes = Creditos.query.all()
         return f"✅ Conectado a la base de datos. creditos en la tabla: {len(clientes)}"
     except Exception as e:
         return f"❌ Error al conectar con la base de datos: {e}"
@@ -92,7 +92,7 @@ def test_db():
 def get_data():
     try:
         # Obtener los créditos agrupados por cliente
-        data = db.session.query(Clientes.cliente, db.func.sum(Clientes.monto)).group_by(Clientes.cliente).all()
+        data = db.session.query(Creditos.cliente, db.func.sum(Creditos.monto)).group_by(Creditos.cliente).all()
         
         # Convertir datos a JSON
         chart_data = {

@@ -1,6 +1,6 @@
 from database import db
 
-class Clientes(db.Model):
+class Creditos(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cliente = db.Column(db.String(100), nullable=False)
     monto = db.Column(db.Float, nullable=False)
